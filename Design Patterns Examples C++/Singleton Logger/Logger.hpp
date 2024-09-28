@@ -15,6 +15,6 @@ class Logger {
  public:
     static Logger* getLogger();
     void log(string message);
-}   
+};   
 
 #endif
