@@ -1,0 +1,9 @@
+Singleton Design Pattern Requires
+Only one object to be created.
+To Restrict Any other program to create another instance.
+  - Make constructor private.
+  - Make copy constructor private.
+  - Make =operator overloading private.
+  - Have a seprate interface for clients to create instance which should return pointer to the ONLY object created.
+  - The interface should be a static member ,so that objects of class Need Not be created for using the interface.
+  
