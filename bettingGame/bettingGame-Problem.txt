@@ -1,80 +1,44 @@
 Program description in short
 
 A betting game server accepting clients on tcp sockets, letting the
-
 clients pick a number within a published range, and every 15 seconds
-
 randomize a winning number, and then letting the clients know if they
-
 won or not.
 
  
 
 Description of the program
-
 The program must accept IPv4 connections on TCP port 2222 and handle up
-
 to BEGASEP_NUM_CLIENTS clients. The code must allow for this define to
-
- range from 1 to 64500.
-
+range from 1 to 64500.
  
-
 An unique client id must be generated upon receipt of a BEGASEP_OPEN
-
 message, this client id must never collide with another connected client.
 
- 
-
 If the maximum number of simultaenous clients is reached the server
-
 must tear down the connection, else it must respond to the BEGASEP_OPEN
-
 message with a BEGASEP_ACCEPT message with the allocated client id and
-
 the allowed betting number range.
 
 When the client has sent a BEGASEP_BET message, which must follow no
-
 other message than BEGASEP_ACCEPT and have a betting number within
-
 the published range, the server is to include that client in the next
-
 betting run.  The client must only send the BEGASEP_BET message once,
-
 any protocol breaches must immediately result in a connection teardown
-
 by the server.
 
- 
-
 A betting run must be performed every 15 seconds but only if there are
-
 clients connected.
 
- 
-
 The betting run must generate a random number within the published
-
 betting number range and send out the winning number to all clients
-
 with the BEGASEP_RESULT message, indicating for each client if they
-
 won or not.  Each winner should also be printed on a seperate line to
-
 stdout, syslog, or similar.  The connection to each client that betted
-
 in this run must then be closed.
 
- 
-
 The program must be able to run "forever" without interaction.
-
- 
-
- The following defines and values are to be used:
-
- 
+The following defines and values are to be used:
 
 #define BEGASEP_NUM_CLIENTS  40
 
@@ -82,19 +46,13 @@ The program must be able to run "forever" without interaction.
 
 #define BEGASEP_NUM_MAX      0xe0ffffaa
 
- 
 
 Protocol specification
 
 The Betting Game Server Protocol, BEGASEP, is a binary protocol in
-
 network byte order. Messages are described below.
 
- 
-
   BEGASEP common header included in all messages:
-
- 
 
     0                   1                   2                   3
 
@@ -108,43 +66,22 @@ network byte order. Messages are described below.
 
  
 
- 
-
   Ver (Version) is always set to 1.
-
   Len (Length) is the length of the entire message in bytes, including header.
-
- Type is the message type (BEGASEP_*) as described below.
+  Type is the message type (BEGASEP_*) as described below.
 
   Client Id is assigned by the server in the BEGASEP_ACCEPT message
-
-    and must thereafter be used in all communication between the server
-
-    and client. It must be set to 0 in the BEGASEP_OPEN message.
-
- 
-
- 
+  and must thereafter be used in all communication between the server
+  and client. It must be set to 0 in the BEGASEP_OPEN message.
 
   Message type BEGASEP_OPEN = 1
 
- 
-
-   This message has no payload.
-
- 
-
-   It is sent upon connect by the client and may be sent only once.
-
-   Client Id must be set to 0.
-
- 
-
- 
+  This message has no payload.
+  It is sent upon connect by the client and may be sent only once.
+  Client Id must be set to 0.
 
   Message type BEGASEP_ACCEPT = 2
 
- 
 
     0                   1                   2                   3
 
@@ -163,24 +100,13 @@ network byte order. Messages are described below.
  
 
    This message is sent by the server in response to a BEGASEP_OPEN
-
    message, the Client Id is set to a dynamically assigned and unique
-
    id in the range 0..BEGASEP_NUM_CLIENTS-1
 
- 
-
    The Lower and Upper end of betting range fields are set to the
-
    BEGASEP_NUM_MIN and BEGASEP_NUM_MAX defines.
 
- 
-
- 
-
   Message type BEGASEP_BET = 3
-
- 
 
     0                   1                   2                   3
 
@@ -195,22 +121,11 @@ network byte order. Messages are described below.
  
 
    This message is sent by the client in response to a BEGASEP_ACCEPT.
-
- 
-
    The Betting number is the number the client is betting on and must
-
    be within the number range returned in the BEGASEP_ACCEPT message.
-
    If it is not, the client is to be discarded.
 
- 
-
-  
-
   Message type BEGASEP_RESULT = 4
-
- 
 
     0                   1                   2                   3
 
@@ -226,36 +141,22 @@ network byte order. Messages are described below.
 
    +-+-+-+-+-+-+-+-+
 
- 
-
   This message is sent by the server to all clients when a winning
-
   number has been generated and is sent to all clients that have sent
-
   a BEGASEP_BET message.
 
- 
-
   The Status field is set to 1 if this client had sent the winning number
-
   in its BEGASEP_BET message, or 0 if it did not match.
-
- 
 
   Winning number is simply the winning number.
 
- 
-
   When this message has been delivered to the client the connection
-
   must be torn down and terminated and the client forgotten.
 
  
-
 Environment
 
 This program must be written in C (not C++) and be compilable with gcc /
-
 Linux. Only standard operating system libraries may be used (such as -lc,
 
 -lnls, etc).
