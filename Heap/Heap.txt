@@ -63,5 +63,26 @@ Heapify: Bottom Up
   swap the element with its child and call heapify for the child.
    If an array is given traverse the array from right to left and check if each index satisfy property of heap if not adjust.
 
-  
+ #################################################
+
+Properties of a Heap (Binary Heap)
+A Heap is a complete binary tree that follows the heap property.
+
+1️⃣ Heap Property
+Max Heap: The parent node is greater than or equal to its children.
+Min Heap: The parent node is smaller than or equal to its children.
+2️⃣ Complete Binary Tree
+A heap is a complete binary tree, meaning all levels are completely filled except possibly the last level.
+The last level is filled from left to right.
+3️⃣ Heap Height
+The height of a heap with n elements is O(log n).
+Since it's a binary tree, every level has at most 2ᵢ nodes.
+4️⃣ Representation in an Array
+A heap is typically stored in an array without using pointers.
+
+For a node at index i:
+
+Left Child → 2 * i + 1
+Right Child → 2 * i + 2
+Parent → (i - 1) / 2
 
