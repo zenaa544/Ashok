@@ -1,3 +1,11 @@
+Build a Max Heap
+Convert the array into a max heap.
+Start heapifying from the last non-leaf node (index n/2 - 1).
+Extract Elements
+Swap the root (largest element) with the last element.
+Reduce heap size and heapify again.
+
+
 #include <iostream>
 using namespace std;
 
