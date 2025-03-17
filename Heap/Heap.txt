@@ -58,7 +58,7 @@ Heap Sort:
   Delete all elements from array ,store them at indices from last;
   (elements adjusted from leaf towards root)
 
-Heapify:
+Heapify: Bottom Up
   Check elements in level order but in reverse order, check if its a heap i.e if its children are smaller than itself(max heap) / greater than itself(min heap)
   swap the element with its child and call heapify for the child.
    If an array is given traverse the array from right to left and check if each index satisfy property of heap if not adjust.
