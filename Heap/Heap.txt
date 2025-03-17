@@ -1,0 +1,67 @@
+Heap:
+
+1- Array Representation of binary tree
+
+ a b c d e f g
+ 0 1 2 3 4 5 6
+ 1 2 3 4 5 6 7
+              a
+             /  \
+            b    c
+           / \   / \
+          d   e  f  g
+
+for 1 based indexing
+parent index=i
+left child = 2*i
+right child =2*i+1
+
+
+for 0 based indexing
+parent =i
+left child = 2*i+1;
+right child =2*i+2;
+
+2-Complete binary tree : 
+
+Elements are filled level by level
+Left elements are filled before right.
+
+Height of complete binary tree = logN
+
+3- Heap is a complete binary tree.
+
+Max Heap:
+
+ Child elements are smaller than the parent
+ OR
+ parent element is greater than or eqaul to all descendants.
+ root is the largest.
+
+Min Heap: 
+  Child elements are greater than the parent
+  OR
+  parent element is smaller than or equal to all descendants.
+          
+Insertion logN:
+Element would be add at the last position available, in last level. then adjusted backwords/towards the root depending on the value till root;
+
+Deletion:
+Only Root most element is deleted .
+
+To delete the root, first get the last element, delete the last node
+Replace the root value with last element value.
+Then adjust the lement to proper position from root top leaves.
+
+Heap Sort:
+  Create Heap
+  Delete all elements from array ,store them at indices from last;
+  (elements adjusted from leaf towards root)
+
+Heapify:
+  Check elements in level order but in reverse order, check if its a heap i.e if its children are smaller than itself(max heap) / greater than itself(min heap)
+  swap the element with its child and call heapify for the child.
+   If an array is given traverse the array from right to left and check if each index satisfy property of heap if not adjust.
+
+  
+
