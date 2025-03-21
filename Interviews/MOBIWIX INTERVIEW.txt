@@ -1,0 +1,19 @@
+void func() { MUTEX_GUARD(m1)  
+
+func2()}; 
+void func2() ( 
+
+MUTEX_GUARD(m1)}
+
+
+Recursive Mutex
+
+abc(){
+
+	mutex m1;
+        m1.lock();
+        //
+        //
+       m1.unlock();
+}
+	

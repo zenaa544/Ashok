@@ -1,0 +1,76 @@
+unit_64 sz = intvec->size();= 4
+   // Boundary Conditions
+   if (!sz) {
+     cout << "FUNC_OUT= Empty input" << endl;
+     return;
+   }
+   if (sz == 1) {
+     cout << "FUNC_OUT= " << intvec[0] << endl;
+     return;
+   }
+   // Core Functionality
+   sz--; 3
+   while ( --sz >= 0 ) {
+     intvec[sz] = intvec[sz] + intvec[sz+1];
+   }
+   cout << "FUNC_OUT= " << intvec[0] << endl;
+
+5
+
+4
+
+3
+
+
+intvec[3]=intvec[3]+intvec[4];
+
+   Question: Outcome with vector of size[4], contents={4,7,3,9}
+
+ 23
+
+4
+3
+2 = 12
+1= 19
+0= 23
+
+
+int i = 0100 100 001;
+
+1000
+1000000000000
+>
+100010001
+
+1010
+   1
+  10    
+int pos = 0;
+
+  << 1
+ 
+ 
+00010001
+
+01000001
+
+00100001
+
+
+
+11110000
+
+110000000
+
+001100000
+
+001000000
+000100000
+
+10000000
+00001000
+
+log64 
+
+
+

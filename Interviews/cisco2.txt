@@ -1,0 +1,54 @@
+create an array from doubly linked list
+
+optimize
+what is volatile
+ipcs
+staic
+where static is stored
+
+What is data integrity
+
+What are the things required for sending data between 2 hosts
+ 
+
+int* fun(struct Node* head){
+ 
+   int count=0;
+   Node* ptr=head;
+   arr[100]
+   while(ptr!=NULL){
+      count++;
+      ptr=ptr->next;
+      
+      
+    }
+
+    if(int *resultArray = (int*)malloc(sizeof(int)* count)==0){
+      return NULL;
+    }
+    memset(resultArray,0, sizeof(int)*count);
+     
+    Node* ptr2=head;
+    int index =0;
+     while(ptr2!=NULL){
+     
+      *(resultArray+index)= ptr2->data;
+       ptr2=ptr2->next;
+    }
+
+    return resultArray;
+
+}
+
+socket,
+bind,
+listen
+
+port;
+IP address
+TCP/UDP 
+
+
+
+mac address
+

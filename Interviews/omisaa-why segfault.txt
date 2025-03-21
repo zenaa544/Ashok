@@ -1,0 +1,31 @@
+#include <iostream>
+#include <unordered_map>
+int main() {
+    // Write C++ code here
+
+    std::unordered_map<int,int> my_map;
+    
+    my_map[0]=101;
+    my_map[1]=102;
+    my_map[2]=103;
+    //my_map[3]=102;
+    
+
+    for(auto it= my_map.begin(); it!=my_map.end(); it++){
+        std::cout<<"key :" << it->first<< "  val: "<< it->second <<std::endl;
+        
+        if(it->second==103){
+            //int key=it->first;
+            my_map.erase(it);
+            std::cout<< "after erase "<<std::endl;
+        }
+    }
+
+std::cout<< "After Erase"<<std::endl;
+ for(auto it= my_map.begin(); it!=my_map.end(); it++){
+        std::cout<<"key :" << it->first<< "  val: "<< it->second <<std::endl;
+    
+        
+    }
+    return 0;
+}

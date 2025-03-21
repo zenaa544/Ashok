@@ -1,0 +1,136 @@
+Server,
+//Sokect 
+sock_addr_t socket,
+int fd = socket(AF_INET, 0 , socket)
+
+
+connect=(fd,IP ADdres )
+bind =(sock, inet_Addr, SOCK_STREAM, port)
+listen=(fd
+
+read
+write
+
+Cient
+
+socket,
+connect=( 
+write
+read
+
+======
+
+Class Singleton {
+
+private:
+    static Singleton* instance;
+    Singleton();
+    Singleton* Singleton (const Singleton&)=0;
+
+    Singleton& operator= (const Singleton&)=0;
+    ~Singleton();
+public:
+    static Singleton* getInstance(); 
+
+}
+
+Singleton::~Singleton(){
+
+  if(instance!=NULL)
+    delete instance;
+}
+Singleton::instance=NULL;
+
+Singleton* Singleton::getInstance(){
+	if(instance==NULL){
+		intsance= new Singleton;
+	}
+return instance;
+ 
+}
+main(){
+  
+Singleton myinstance* = Singleton::getInstance();
+
+}
+
+int arr[5][5][5];
+
+arr[i][j][k]= *(p+i+j*5+k*(5*5))
+arr[0][0][1] = *(p+ 
+arr[0][1][1]
+arr[1][1][1]
+
+int ***p = (int***)malloc(5*5*5*(sizeof(int)));
+
+
+array of double pointers of size 5
+
+ptr1*** = (int**)malloc(5* sizeof(int**));
+
+
+for(int i=0;i<5;i++)
+
+{
+ *(ptr1+i)=(int*)malloc(5* sizeof(int*));
+}
+
+for(int i=0; i<5; i++){
+  for(int j=0; j<5;j++){
+   **(ptr1+i)= 
+
+}
+
+int fun1 (int a, int b){
+
+return (a+b);
+}
+
+main(){
+
+fnptr* f1 = fun1;
+
+cout<< f1(4,5)<<endl;
+
+
+}
+
+list* head;
+
+struct list {
+ int data;
+ list* next;
+}
+
+
+list* reverse( list* head){
+
+list* temp =head;
+list* temp2=NULL;
+list * prev=NULL;
+
+list* current=head;
+list* next=NULL;
+list* prev=NULL;
+
+while( current!=NULL){
+
+  prev=current;
+  next=current->next;
+  current->next= prev;
+  
+  //temp=head;
+  temp2=temp->next;
+  temp->next=prev;
+  prev=temp;
+}
+
+
+char a = 'A', b='B';
+
+const char* ptr= &a;
+
+*ptr=b;
+
+ptr=&b; 
+}

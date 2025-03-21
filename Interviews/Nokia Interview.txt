@@ -1,0 +1,79 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+  GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby, 
+  C#, OCaml, VB, Perl, Swift, Prolog, Javascript, Pascal, COBOL, HTML, CSS, JS
+  Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <stdio.h>
+class A{
+    
+private:
+    static int a=10;
+public:    
+    static int getVal(){
+     return a;   
+    }
+};
+
+int main()
+{
+    printf("Hello World");
+    A object;
+//    A* ptr= &object;
+    
+//    cout<< ptr->a;<<endl;
+
+cout << getVal() << endl;
+    return 0;
+    
+    shape* myshape;
+    
+    myshape= fatcory.getInstance("circle");
+    
+    myshape->createShape();
+}
+
+class shape(){
+    virual void createShape ();
+}
+
+class circle: public shape
+    void createShape(){
+        cout<< "creating circle"<<endl;
+    }
+
+}
+
+class factory{
+    
+    shape* instance;
+    static shape* getInstance(string type){
+        if(type == "circle"){
+            instance = new circle();
+        }
+        else{
+            
+            instance = new circle();
+        }
+        
+        return instance;
+    }
+}
+
+template < class T> add(T a, Tb ){
+    
+    "abc abba act bdf bccb"
+    
+    while (lptr <= rptr){
+        if(*lptr!=*rptr){
+            return false;
+        }
+        lptr++;
+        rptr--
+    }
+    return true;
+    
+}
+
