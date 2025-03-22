@@ -97,6 +97,19 @@ struct Node {
 };*/
 class Solution{
     public:
+/*Algorithm:
+1-Use a stack and push the root node.
+
+2-Use a pointer lastVisited to track the last visited node.
+
+3-Traverse to the leftmost node while pushing nodes onto the stack.
+
+4-If the current node has no right child or the right child is already visited, visit the node (pop and print).
+
+5-Otherwise, move to the right subtree.
+
+6-Repeat until all nodes are visited.
+*/
     vector<int> postOrder(Node* node) {
         
         vector<int> postOrder;
