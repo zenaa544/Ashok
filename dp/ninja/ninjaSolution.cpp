@@ -3,6 +3,18 @@
   ########*/
 
 
+/*
+1. Greedy approach will give worng solution if we choose the max point task from 0th day and try to build, because point for the same task on
+next day might increae.
+
+2. We need all possible combinations 
+
+lets start on 0th day and pick any task and following days we pick only tasks that was not picked the previous day.
+
+3- recurence will happen from 0th day to following days till n-1 th day.
+*/
+
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
