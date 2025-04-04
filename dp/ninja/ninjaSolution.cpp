@@ -75,6 +75,33 @@ int ninjaTraining(int n, vector<vector<int>> &points) {
     return max({dp[n - 1][0], dp[n - 1][1], dp[n - 1][2]});
 }
 
+/********Tabulation space optimized*********/
+
+
+int ninjaTraining(int n, vector<vector<int>> &points) {
+    vector<int> prev(3, 0);  // Stores max points for the previous day
+
+    // Base case: First day's points
+    prev[0] = points[0][0];
+    prev[1] = points[0][1];
+    prev[2] = points[0][2];
+
+    // Compute DP table for remaining days
+    for (int day = 1; day < n; day++) {
+        vector<int> curr(3, 0);  // Store current day's results
+
+        for (int task = 0; task < 3; task++) {
+            curr[task] = points[day][task] + 
+                         max(prev[(task + 1) % 3], prev[(task + 2) % 3]);
+        }
+
+        prev = curr;  // Update previous day's result
+    }
+
+    // The answer is the max points on the last day
+    return max({prev[0], prev[1], prev[2]});
+}
+
 int main() {
     vector<vector<int>> points = {
         {1, 2, 5},
@@ -85,3 +112,4 @@ int main() {
     cout << "Max Points: " << ninjaTraining(points.size(), points) << endl;
     return 0;
 }
+
