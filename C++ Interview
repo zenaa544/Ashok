@@ -1,0 +1,9 @@
+1- Smart pointers
+What are the benefits of using smart pointers over raw pointers? (Memory Management)
+Smart pointers are a key feature in C++ that help manage dynamic memory and prevent memory leaks by providing automatic memory deallocation. Here are some benefits of using smart pointers over raw pointers:
+
+Automatic Memory Management: Smart pointers automatically deallocate memory when no longer needed.
+Exception Safety: They can handle exceptions without leaking resources.
+Reference Counting: Shared pointers (std::shared_ptr) keep track of the number of references to a memory block and deallocate it only when there are no references left.
+Ownership Semantics: Unique pointers (std::unique_ptr) provide clear ownership of the memory, preventing multiple pointers from trying to delete the same resource.
+Custom Deleters: Smart pointers can be customized with deleters to handle special cleanup needs.
