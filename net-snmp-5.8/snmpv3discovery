@@ -1,0 +1,32 @@
+Issue : Snmpv3 discovery fails with error device not reachable.
+
+RCA: In net-snmp 5.8,
+
+probe pdu is sent , after receiving the response v3 get-bulk request is sent, after sending get-bulk request ,call-back is invoked for the same request ID with error NETSNMP_CALLBACK_OP_SEC_ERROR without waiting for the response. Ideally it should process response in next iteration and send error if retry attempts are exhausted.
+
+Fix: Check for request retry attempts with session retry limit , send error only if retry attempts are exhausted.
+
+Testing:
+
+Tested with Juniper switch md5 authentication with auth no priv.
+Tested with Cisco with SHA based authentication with auth priv.
+Tested for snmpv2 discovery
+
+
+diff --git a/snmplib/snmp_api.c b/snmplib/snmp_api.c
+index 554767a..042cf87 100644
+--- a/snmplib/snmp_api.c
++++ b/snmplib/snmp_api.c
+@@ -5731,8 +5731,10 @@ _sess_process_packet_handle_pdu(void *sessp, netsnmp_session * sp,
+ 	      break;
+ 	    } else { /* We're done with retries */
+ 	      if (callback) {
+-	        callback(NETSNMP_CALLBACK_OP_SEC_ERROR, sp,
+-	                 pdu->reqid, pdu, magic);
++                if (rp->retries >= sp->retries) {
++	          callback(NETSNMP_CALLBACK_OP_SEC_ERROR, sp,
++	                   pdu->reqid, pdu, magic);
++                }
+ 	      }
+ 	    }
+ 	  }
