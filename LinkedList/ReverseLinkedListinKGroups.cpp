@@ -44,3 +44,29 @@ public:
         return newHead;
     }
 };
+===================================
+
+    Iterative
+    temp=head;
+    prevLast=null;
+    while(temp!=NULL){
+        kthNode= getKthNode(tmep,k);
+    }
+    if(kthNode==NULL)
+        if(prevLast) prevLast->next=temp;
+          break;
+    }
+    nextNode= kthNode->next;
+    kthNode->next=NULL;
+    reverse(temp);
+    if(temp==head)
+         head=kthNode;
+    else
+        prevLast-.next=kthNode;
+
+    prevLast=temp;
+    temp=nextNode
+
+}//while
+
+return head;
