@@ -76,3 +76,37 @@ public:
     
     }
 };
+
+=============EVEN SIMPLER
+
+    vector<int> verticalOrderTraversal(TreeNode<int> *root)
+{
+    //    Write your code here.
+
+        map<int, vector<int>> nodes; // col -> vector of (row, val)
+        queue<tuple<TreeNode<int>*, int>> q;    // node, row, col
+
+        q.push({root, 0});
+
+        while (!q.empty()) {
+            auto [node, col] = q.front();
+            q.pop();
+
+            nodes[col].emplace_back(node->data);
+
+            if (node->left)  q.push({node->left, col - 1});
+            if (node->right) q.push({node->right, col + 1});
+        }
+
+        vector<int> result;
+        for (auto& [col, vec] : nodes) {
+            //sort(vec.begin(), vec.end()); // sort by (row, value)
+            //vector<int> colVals;
+            for (auto& val : vec)
+                result.push_back(val);
+        }
+
+        return result;
+    
+    
+}
