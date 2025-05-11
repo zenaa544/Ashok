@@ -6,14 +6,16 @@ You have a binary tree of 'N' unique nodes and a Start node from where the tree 
 It is given that it takes 1 minute for the fire to travel from the burning node to its adjacent node and burn down the adjacent node.
 
 #include <bits/stdc++.h>
+
 using namespace std;
 
-template<typename T>
+template <typename T>
 class TreeNode {
 public:
     T data;
     TreeNode<T>* left;
     TreeNode<T>* right;
+
     TreeNode(T val) {
         data = val;
         left = nullptr;
@@ -21,13 +23,20 @@ public:
     }
 };
 
-// Step 1: Build parent map
-void mapParents(TreeNode<int>* root, unordered_map<TreeNode<int>*, TreeNode<int>*>& parent) {
+// Build parent map and get pointer to start node
+TreeNode<int>* mapParents(TreeNode<int>* root,
+                          unordered_map<TreeNode<int>*, TreeNode<int>*>& parent,
+                          int start) {
     queue<TreeNode<int>*> q;
     q.push(root);
+    TreeNode<int>* startNode = nullptr;
 
     while (!q.empty()) {
         TreeNode<int>* curr = q.front(); q.pop();
+        if (curr->data == start) {
+            startNode = curr;
+        }
+
         if (curr->left) {
             parent[curr->left] = curr;
             q.push(curr->left);
@@ -37,27 +46,15 @@ void mapParents(TreeNode<int>* root, unordered_map<TreeNode<int>*, TreeNode<int>
             q.push(curr->right);
         }
     }
+
+    return startNode;
 }
 
-// Step 2: Find the start node
-TreeNode<int>* findStart(TreeNode<int>* root, int start) {
-    if (!root) return nullptr;
-    if (root->data == start) return root;
-
-    TreeNode<int>* left = findStart(root->left, start);
-    if (left) return left;
-
-    return findStart(root->right, start);
-}
-
-// Step 3: BFS to simulate fire spreading
 int timeToBurnTree(TreeNode<int>* root, int start) {
     if (!root) return 0;
 
     unordered_map<TreeNode<int>*, TreeNode<int>*> parentMap;
-    mapParents(root, parentMap);
-
-    TreeNode<int>* startNode = findStart(root, start);
+    TreeNode<int>* startNode = mapParents(root, parentMap, start);
 
     unordered_set<TreeNode<int>*> visited;
     queue<TreeNode<int>*> q;
@@ -73,30 +70,23 @@ int timeToBurnTree(TreeNode<int>* root, int start) {
         for (int i = 0; i < size; ++i) {
             TreeNode<int>* node = q.front(); q.pop();
 
-            // Spread to left
-            if (node->left && !visited.count(node->left)) {
-                visited.insert(node->left);
+            if (node->left && visited.insert(node->left).second) {
                 q.push(node->left);
                 burned = true;
             }
 
-            // Spread to right
-            if (node->right && !visited.count(node->right)) {
-                visited.insert(node->right);
+            if (node->right && visited.insert(node->right).second) {
                 q.push(node->right);
                 burned = true;
             }
 
-            // Spread to parent
-            if (parentMap.count(node) && !visited.count(parentMap[node])) {
-                visited.insert(parentMap[node]);
+            if (parentMap.count(node) && visited.insert(parentMap[node]).second) {
                 q.push(parentMap[node]);
                 burned = true;
             }
         }
 
-        if (burned)
-            time++;  // Fire spread in this round
+        if (burned) time++;
     }
 
     return time;
