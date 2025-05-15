@@ -1,0 +1,53 @@
+ // Alternative implementation using deque for more modern C++ approach
+// // we can use deque and then push pop_front or pop_back depening upone the leftToWrite Flag.
+// But we must alway enaueue using push_back same as std::queue.
+// alternate deque approach
+
+
+    static std::vector<std::vector<int>> zigzagLevelOrderUsingDeque(TreeNode* root) {
+        if (!root) return {};
+        
+        std::vector<std::vector<int>> result;
+        std::deque<TreeNode*> dq;
+        dq.push_back(root);
+        
+        // Flag to track direction
+        bool leftToRight = true;
+        
+        while (!dq.empty()) {
+            int levelSize = dq.size();
+            std::vector<int> currentLevel;
+            currentLevel.reserve(levelSize);
+            
+            // Process current level
+            for (int i = 0; i < levelSize; ++i) {
+                TreeNode* node;
+                
+                if (leftToRight) {
+                    // Process from front
+                    node = dq.front();
+                    dq.pop_front();
+                    
+                    // Add children (always left then right)
+                    if (node->left) dq.push_back(node->left);
+                    if (node->right) dq.push_back(node->right);
+                } else {
+                    // Process from back
+                    node = dq.back();
+                    dq.pop_back();
+                    
+                    // Add children in reverse order (right then left)
+                    // and to the front to maintain the desired traversal
+                    if (node->right) dq.push_front(node->right);
+                    if (node->left) dq.push_front(node->left);
+                }
+                
+                currentLevel.push_back(node->val);
+            }
+            
+            result.push_back(std::move(currentLevel));
+            leftToRight = !leftToRight;
+        }
+        
+        return result;
+    }
