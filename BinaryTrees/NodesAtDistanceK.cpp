@@ -42,17 +42,21 @@ vector<BinaryTreeNode<int>*> printNodesAtDistanceK(BinaryTreeNode<int>* root, Bi
     unordered_set<BinaryTreeNode<int>*> visited;
     queue<BinaryTreeNode<int>*> q;
     q.push(target);
-    visited.insert(target);
+    visited.insert(target); // to avoid visiting again from child to parent and then child node
 
     int currDist = 0;
 
     while (!q.empty()) {
-        int size = q.size();
-        if (currDist == K) break;
+       if (currDist == K) {
+         break;
+       }
+
+        int currenLevelSize = q.size();       
         currDist++;
 
-        for (int i = 0; i < size; ++i) {
-            auto node = q.front(); q.pop();
+        for (int i = 0; i < currenLevelsize; ++i) {
+            auto node = q.front();
+             q.pop();
             
             if (node->left && !visited.count(node->left)) {
                 q.push(node->left);
@@ -62,7 +66,7 @@ vector<BinaryTreeNode<int>*> printNodesAtDistanceK(BinaryTreeNode<int>* root, Bi
                 q.push(node->right);
                 visited.insert(node->right);
             }
-            if (parentMap.count(node) && !visited.count(parentMap[node])) {
+            if (parentMap.contains(node) && !visited.count(parentMap[node])) {
                 q.push(parentMap[node]);
                 visited.insert(parentMap[node]);
             }
