@@ -1,20 +1,22 @@
-int height(TreeNode<int>* root, int& diameter){
-    if (root==NULL)return 0;
 
-    int leftHeight = height(root->left,diameter);
-    int rightHeight = height(root->right,diameter);
-    
-    diameter= max(leftHeight+rightHeight,diameter);
+int getHeight(TreeNode *root, int &diameter)
+{
+	if (root == nullptr) {
+		return 0;
+	}
+	
+	int left = getHeight(root->left, diameter);
+	int right = getHeight(root->right, diameter);
 
-    return max(leftHeight,rightHeight)+1;
-
+	auto currentDia = left + right + 1;
+	// if the diameter is passing by the current node;
+	diameter = max(currentDia, diameter);
+	auto currenHeight = max(left, rigth) + 1;
+	// pass the parent curren Height to calculate further diameter
+	return currentHeight;
 }
-int diameterOfBinaryTree(TreeNode<int> *root){
-	// Write Your Code Here.
 
-    if (root==NULL)return 0;
-
-    int diameter=0;
-    height(root,diameter);
-    return diameter;
+int diameterOfBinaryTree(TreeNode *root){
+     int diameter = 0;
+     (void)getHeight(root, &diameter);
 }
