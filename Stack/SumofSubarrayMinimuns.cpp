@@ -3,14 +3,36 @@ Since the answer may be large, return the answer modulo 109 + 7.
 
 
 Solution :
-For each element:
+💡 Key Idea
+For each element arr[i], count how many subarrays exist where arr[i] is the minimum.
+Then multiply arr[i] with the number of such subarrays to get its total contribution.
 
-Find how many elements to the left are greater than or equal (strictly greater for uniqueness) — call this left.
+✅ How to Count Subarrays Where arr[i] is the Minimum
+Use monotonic stacks to compute:
 
-Find how many elements to the right are strictly greater — call this right.
+prevLess[i]:
+Number of elements to the left of i (including i) such that all are greater than arr[i]
+→ These are the subarrays that can start from a previous index and end at i.
 
-The total number of subarrays in which arr[i] is the minimum is:
-left_count * right_count
+nextLess[i]:
+Number of elements to the right of i (including i) such that all are greater than or equal to arr[i]
+→ These are the subarrays that can start at i and end at a later index.
+
+So total number of subarrays where arr[i] is the minimum = prevLess[i] * nextLess[i].
+
+🧮 Final Formula
+
+sum += arr[i] * prevLess[i] * nextLess[i];
+
+
+📦 Time and Space Complexity
+Time: 
+𝑂(𝑛)
+O(n) — each element is pushed and popped from the stack once.
+
+Space: 
+𝑂(𝑛)
+O(n) — for prevLess, nextLess, and stacks.
 
 
 
@@ -25,8 +47,8 @@ left_count * right_count
     stack <int> st1;
     stack <int> st2;
     long long  sum=0;
-    //count previous elements that are less than each element and store in prevLess
-    //it includes current element
+    //We are counting number of subarrays where current element is the minimum, for that we are checking 
+    //How many elements to the left are greater than current element and howmany to to the right are greater than current element
     for(int i=0;i<n;++i){
         while(!st1.empty() && arr[i]< arr[st1.top()]){
             st1.pop();
