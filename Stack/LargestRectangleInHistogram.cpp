@@ -1,4 +1,4 @@
-***************************************************************************************************************
+/***************************************************************************************************************
 https://leetcode.com/problems/largest-rectangle-in-histogram/
 
 Given an array of integers heights representing the histogram's bar height where the width of each bar is 1,
@@ -8,8 +8,10 @@ Brute Force--
   3 Passess.
   Find next smaller element nse and previous smaller  pse elements for each element
   Calculate Area for each index heights[i]*(nse-pse-1)
-*******************************************************************************************************************
-    int largestRectangleArea(vector<int>& heights) {
+********************************************************************************************************************/
+    
+  
+  int largestRectangleArea(vector<int>& heights) {
 
         int n=heights.size();
         vector<int> prevSmaller(n,-1);
@@ -55,7 +57,7 @@ Brute Force--
         return maxArea;
     }
 
-****************************************************************************************************************************************
+/****************************************************************************************************************************************
 In single Single pass, Actaully 2 if we consider emptying the stack .
    Use stack to keep elements in increasing order
   Get the next smaller element as you pass the array,
@@ -65,7 +67,7 @@ nse= i/traversing index,
  pse= stack top else -1 if stack empty.
 
 then empty the the stack in another pass and claculate area once all the elements traversed once.
-********************************************************************************************************************************************
+********************************************************************************************************************************************/
 int largestRectangleArea(vector<int>& heights) {
 
         stack<int> st;
@@ -101,11 +103,11 @@ int largestRectangleArea(vector<int>& heights) {
         return maxArea;
     }
 
-***************************************************************************************************************************************
+/***************************************************************************************************************************************
 Above approach needs additional pass to empty the stack ,that can be made cleaner but not necessrily more effective by adding a 0 to heights 
 That will allow to do evrything in single pass
 
-*************************************************************************************************************************************
+*************************************************************************************************************************************/
 int largestRectangleArea(vector<int>& heights) {
     int n = heights.size();
     stack<int> st;
@@ -128,4 +130,4 @@ int largestRectangleArea(vector<int>& heights) {
     return maxArea;
 }
 
-*************************************************************************************************************************************
+/*************************************************************************************************************************************/
