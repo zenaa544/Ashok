@@ -59,4 +59,47 @@ Solution
    
 }
 
-  
+==============================================================
+   ✅ Approach
+Use a monotonic stack (using a string as a stack) to keep digits in increasing order. At each step:
+
+Remove digits from the stack if the current digit is smaller than the stack's top and we still have k digits to remove.
+
+Finally:
+
+Remove remaining digits from the end if k > 0.
+
+Remove leading zeros.
+
+Return "0" if the resulting number is empty.
+
+🧠 Time Complexity
+O(n) where n = num.size()
+
+string removeKdigits(string num, int k) {
+    string result;
+
+    for (char digit : num) {
+        // Remove from result if digit < back of result and k > 0
+        while (!result.empty() && k > 0 && result.back() > digit) {
+            result.pop_back();
+            k--;
+        }
+        result.push_back(digit);
+    }
+
+    // If still need to remove digits, remove from end
+    while (k > 0 && !result.empty()) {
+        result.pop_back();
+        k--;
+    }
+
+    // Remove leading zeros
+    int i = 0;
+    while (i < result.size() && result[i] == '0') i++;
+
+    result = result.substr(i);
+
+    return result.empty() ? "0" : result;
+}
+
