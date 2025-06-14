@@ -1,5 +1,6 @@
 Given a string s with repeated characters, the task is to rearrange characters in a string such that no two adjacent characters are the same.
-Note: The string has only lowercase English alphabets and it can have multiple solutions. Return any one of them. If there is no possible solution, then print empty string ("").
+Note: The string has only lowercase English alphabets and it can have multiple solutions. Return any one of them. If there is no possible solution, 
+then print empty string ("").
 
 Examples:
 
