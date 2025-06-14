@@ -64,3 +64,71 @@ If any character’s frequency is more than (s.size() + 1)/2, it's impossible.
      return result;
     }
 };
+==============================================================================================================
+
+Alternate method only for lower case charecters
+Case	Best Approach
+You want best general-purpose correctness	✅ Use Heap
+You want fast, simple code for lowercase a–z	✅ Use Greedy Fill
+You want to support Unicode or multicharacter sets	✅ Use Heap
+
+This method is faster (O(n + k log k), where k = 26) and uses less memory than a heap.
+
+It works well due to limited alphabet size (only lowercase letters).
+
+It doesn’t truly use two classic “pointers” but simulates them via the even/odd index fill pattern.
+
+
+🧠 Idea:
+Sort characters by frequency.
+
+Greedily place characters in alternate indices to avoid adjacency.
+
+Use two passes:
+
+Fill even indices (0, 2, 4, …) first.
+
+Then fill odd indices (1, 3, 5, …).
+
+
+
+class Solution {
+  public:
+    string rearrangeString(string s) {
+        // code here
+        
+      vector<int> freq(26, 0);
+    int n = s.size();
+
+    for (char c : s)
+        freq[c - 'a']++;
+
+    int maxFreq = *max_element(freq.begin(), freq.end());
+    if (maxFreq > (n + 1) / 2) return ""; // Not possible
+
+    // Create sorted character list based on frequency
+    vector<pair<int, char>> sortedChars;
+    for (int i = 0; i < 26; ++i) {
+        if (freq[i])
+            sortedChars.push_back({freq[i], (char)(i + 'a')});
+    }
+
+    sort(sortedChars.rbegin(), sortedChars.rend()); // sort by freq descending
+
+    string res(n, ' ');
+    int idx = 0; // even index start
+
+  for (auto& p : sortedChars) {
+    int count = p.first;
+    char ch = p.second;
+
+    while (count-- > 0) {
+        res[idx] = ch;
+        idx += 2;
+        if (idx >= n) idx = 1;
+    }
+}
+
+    return res;
+    }
+};
