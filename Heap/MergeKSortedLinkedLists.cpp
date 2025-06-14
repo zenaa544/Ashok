@@ -26,3 +26,29 @@ ListNode* mergeKLists(vector<ListNode*>& lists) {
         return head.next;
 
     }
+=======================================================
+    map<int,list<ListNode*>> nodeMap;
+
+    // Step 1: Bucket all nodes into map
+    for (ListNode* list : lists) {
+        while (list) {
+            ListNode* next = list->next;
+            list->next = nullptr;  // disconnect
+            nodeMap[list->val].push_back(list);
+            list = next;
+        }
+    }
+
+    // Step 2: Stitch all nodes in order
+    ListNode dummy(0);
+    ListNode* tail = &dummy;
+
+    for (auto& [val, nodeList] : nodeMap) {
+        for (ListNode* node : nodeList) {
+            tail->next = node;
+            tail = tail->next;
+        }
+    }
+
+    return dummy.next;
+    }
