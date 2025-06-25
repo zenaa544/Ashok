@@ -52,3 +52,31 @@ int findNumOfProvinces(vector<vector<int>>& roads, int n) {
 
     return count;
 }
+================================================================================
+
+
+
+void dfs(int city, vector<vector<int>>& roads, vector<bool>& visited, int n) {
+    visited[city] = true;
+
+    for (int i = 0; i < n; i++) {
+        if (roads[city][i] == 1 && !visited[i]) {
+            dfs(i, roads, visited, n);
+        }
+    }
+}
+
+
+int findNumOfProvinces(vector<vector<int>>& roads, int n) {
+    vector<bool> visited(n, false);
+    int count = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            count++;
+            dfs(i, roads, visited, n);
+        }
+    }
+
+    return count;
+}
