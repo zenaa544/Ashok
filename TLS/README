@@ -1,0 +1,5 @@
+This Folder/Directory Contains Topics to understand TLS Step by Step with examples and packet captures.
+
+Topics
+1- UnderStanding Digital Certificates and How server gets a Digital Certificate ,How client uses a Digital certficate to validate the server.
+   Refer- https://github.com/zenaa544/Ashok/blob/main/TLS/Digital_Certificates_Explained.pdf
