@@ -1,0 +1,189 @@
+
+Step 1: Each side generates a private key
+
+The client picks a random private number a.
+
+The server picks a random private number b.
+
+These are secret and never sent.
+
+Step 2: Each side computes a public key
+
+Using an agreed-upon group (large prime p and generator g for DH, or elliptic curve point G for ECDHE):
+
+Client computes its public value:
+A = g^a mod p (for DH)
+A = a·G (for ECDHE, point multiplication)
+
+Server computes its public value:
+B = g^b mod p
+B = b·G
+
+These public values A and B are exchanged.
+
+Step 3: Each side computes the Pre-Master Secret
+
+Now, each side combines their own private key with the other side’s public key:
+
+Client computes:
+S = B^a mod p = (g^b)^a = g^(ab) mod p
+(or for ECDHE: S = a·B = a·(b·G) = (ab)·G)
+
+Server computes:
+S = A^b mod p = (g^a)^b = g^(ab) mod p
+(or for ECDHE: S = b·A = b·(a·G) = (ab)·G)
+
+👉 Both arrive at the same value because math guarantees:
+g^(ab) mod p = g^(ba) mod p (or (ab)·G = (ba)·G on elliptic curves).
+
+This shared S is the Pre-Master Secret.
+
+Step 4: Derive the Master Secret
+
+TLS doesn’t use S directly. It runs S through a key derivation function (PRF/HKDF) along with:
+
+Nonces from both client & server hellos
+
+Hashing to mix in freshness
+
+This produces the Master Secret, and from that:
+
+Session keys for encryption (e.g., AES-256-GCM key)
+
+Keys for integrity/MAC (in TLS 1.2) or AEAD (in TLS 1.3, MAC is inside AES-GCM/ChaCha20-Poly1305)
+
+✅ So:
+
+Yes, the Pre-Master Secret is the same for both client & server.
+
+They arrive at it independently (never transmitted) thanks to DH math.
+
+The Master Secret is then derived identically by both using the PRF/HKDF and random nonces.
+
+
+=====================================================================================================
+🔑 1. Pre-Master Secret (PMS)
+
+RSA key exchange (TLS 1.2 only):
+
+Client generates the PMS (random 48 bytes), encrypts it with the server’s public key, sends it in ClientKeyExchange.
+
+Server decrypts it with its private key.
+✅ Now both have the same PMS.
+
+(EC)DHE key exchange (TLS 1.2 & 1.3):
+
+Both client & server generate ephemeral key pairs.
+
+They exchange the public part (ServerKeyExchange in TLS 1.2, key_share extension in TLS 1.3).
+
+Each side does the Diffie-Hellman math with its private key and the other’s public key.
+✅ Result: shared PMS that never goes over the wire.
+
+🔐 2. Master Secret (TLS 1.2) / Handshake Secrets (TLS 1.3)
+
+In TLS 1.2:
+
+PMS → Master Secret via PRF:
+
+master_secret = PRF(PMS, "master secret",
+                    ClientRandom + ServerRandom) [48 bytes]
+
+
+In TLS 1.3:
+
+PMS goes into HKDF extract/expand chain (early secret → handshake secret → master secret).
+
+No single “master secret,” but functionally the same idea.
+
+🔧 3. Key Expansion
+
+From the master secret, session keys are derived.
+
+TLS 1.2 (with AES + HMAC):
+PRF expands to multiple keys:
+
+client_write_MAC_key
+server_write_MAC_key
+client_write_key
+server_write_key
+client_IV
+server_IV
+
+
+→ That’s 4 or 6 keys, depending on cipher (6 if separate MAC, 4 if AEAD).
+
+TLS 1.3:
+Cleaner design with HKDF. From master secret, we derive:
+
+client_application_traffic_secret
+server_application_traffic_secret
+→ expanded into encryption keys & IVs (per AEAD)
+
+
+No separate MAC keys anymore, since AEAD (e.g., AES-GCM, ChaCha20-Poly1305) handles both encryption + integrity.
+
+📦 4. Data Transmission
+
+After this, both sides have identical symmetric keys.
+
+All application data is encrypted & authenticated with those keys (per direction).
+
+✅ So yes — PMS → Master Secret → {4–6 keys in TLS 1.2, or AEAD traffic keys in TLS 1.3}.
+
+Do you want me to also draw the full key schedule diagram for TLS 1.2 and TLS 1.3 (step by step arrows showing derivation), like we did for the handshake?
+
+**
+
+==============================
+TLS 1.2 Key Schedule
+(ClientHello)   ClientRandom ------------------┐
+(ServerHello)   ServerRandom ------------------┘
+                          │
+                          ▼
+            Pre-Master Secret (PMS)
+                          │
+                          ▼
+     Master Secret = PRF(PMS, "master secret",
+                         ClientRandom + ServerRandom)
+                          │
+                          ▼
+   Key Block = PRF(MasterSecret, "key expansion",
+                   ServerRandom + ClientRandom)
+                          │
+    ┌───────────────────────────┬───────────────────────────┐
+    ▼                           ▼                           ▼
+ client_write_MAC_key   server_write_MAC_key      (if using CBC+HMAC)
+ client_write_key       server_write_key          (AES/3DES key)
+ client_IV              server_IV                 (IV for AES-CBC, etc.)
+==============================================================================**
+
+TLS 1.3 Key Schedule
+
+Early Secret (from PSK or 0) 
+        │
+        ▼
+Handshake Secret = HKDF-Extract(DH(PMS), Early Secret)
+        │
+        ├──> Client Handshake Traffic Secret
+        │         │
+        │         └──> Expanded into client handshake key + IV
+        │
+        └──> Server Handshake Traffic Secret
+                  │
+                  └──> Expanded into server handshake key + IV
+
+(Handshake finished → derive application secrets)
+
+Master Secret = HKDF-Extract(0, Handshake Secret)
+        │
+        ├──> Client Application Traffic Secret
+        │         │
+        │         └──> Expanded into client app key + IV
+        │
+        └──> Server Application Traffic Secret
+                  │
+                  └──> Expanded into server app key + IV
+
+
+
