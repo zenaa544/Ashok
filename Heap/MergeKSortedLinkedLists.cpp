@@ -3,7 +3,7 @@ Merge all the linked-lists into one sorted linked-list and return it.
 https://leetcode.com/problems/merge-k-sorted-lists/description/
 
 
-Following 2 solutions are bruteforce solutions with TC O(n log m) ;
+Following 3 solutions are bruteforce solutions with TC O(n log m) ;
 For optimal solution with heap check last one.TC (n log k)
 
 n	Total number of all nodes across all k linked lists
@@ -60,7 +60,76 @@ ListNode* mergeKLists(vector<ListNode*>& lists) {
 
     return dummy.next;
     }
+
+
+Let's review your code step-by-step for merging K sorted lists using your brute-force approach: repeatedly merge two lists into result.
+
+Spotting Issues
+### 1. Signature and Semantics
+You define void merge2SortedLists(ListNode &result, ListNode &list)
+result is a reference to a single node, not the head of a list.
+ListNode &list is a reference to the node (not pointer).
+But in practice:
+
+List heads should be ListNode*, not references to nodes.
+You need to merge two heads, return new merged head.
+### 2. List Traversal
+You use ptr1 = result, ptr2 = list, which are references to nodes.
+Ideally, these should be ListNode* ptr1, *ptr2—and heads of two lists.
+### 3. Buggy Assignment
+In this line: tail-next = ptr1;
+Typo: should be tail->next = ptr1; (use ->, not -)
+After merging,
+result.next = dummy.next;
+But result is a single node, your real "result" list is dummy.next
+4. Ownership Problem
+You keep reusing the same result node (not head pointer).
+Each time you merge, you need to update result pointer to new merged list head.
+#### 5. Correct Signature
+Best to define:
+
+cpp
+Run Code
+Copy code
+ListNode* merge2SortedLists(ListNode* l1, ListNode* l2);
+Returns the new head node after merging.
+Correct Code
+Here's a robust K-list merge via brute-force, repeatedly merging 2 lists:
+
+cpp
+Run Code
+Copy code
+ListNode* merge2SortedLists(ListNode* l1, ListNode* l2) {
+    ListNode dummy(0);
+    ListNode* tail = &dummy;
+
+    while (l1 && l2) {
+        if (l1->val <= l2->val) {
+            tail->next = l1;
+            l1 = l1->next;
+        } else {
+            tail->next = l2;
+            l2 = l2->next;
+        }
+        tail = tail->next;
+    }
+    // Attach remaining nodes
+    if (l1) tail->next = l1;
+    if (l2) tail->next = l2;
+
+    return dummy.next; // head of merged list
+}
+
+ListNode* mergeKLists(vector<ListNode*>& lists) {
+    ListNode* result = nullptr;
+    for (auto list : lists) {
+        result = merge2SortedLists(result, list); // always use merged result as next input
+    }
+    return result;
+}
 ==================================================
+
+        OPTIMAL -minheap
 
 🔄 Logic to Merge k Sorted Lists Using a Min-Heap:
 
