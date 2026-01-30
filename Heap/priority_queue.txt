@@ -1,0 +1,39 @@
+#include <queue>
+#include <vector>
+
+std::priority_queue<int> maxHeap; // Max heap by default
+
+
+std::priority_queue<int, std::vector<int>, std::greater<int>> minHeap;
+
+
+priority_queue<T, c, comp> pq;
+where,
+
+T: DataType of the priority queue
+pq: Name assigned to the priority queue.
+c: Underlying container. Uses vector as default.
+comp: It is a binary predicate function that tells priority queue how to compare two elements. 
+It is used to set the custom priority parameter and scheme. It is optional and if not provided, maximum value gets maximum priority.
+
+struct Item {
+    int value;
+    int priority;
+};
+
+struct CompareItem {
+    bool operator()(const Item& a, const Item& b) {
+        // Example: Min heap based on priority
+        return a.priority > b.priority;
+    }
+};
+struct Compare {
+    bool operator()(const Item& a, const Item& b) const {
+        return a.priority < b.priority; // Max heap: larger priority is "higher"
+    }
+};
+std::priority_queue<Item, std::vector<Item>, CompareItem> customPQ;
+
+NOTE: The comparator should return true if a should come after b, meaning b will have higher priority than a.
+
+That's why, for a min-heap, you use return a > b;
