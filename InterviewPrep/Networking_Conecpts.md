@@ -1,3 +1,125 @@
+# What Happens When You Type a URL in Your Browser and Press Enter?
+
+
+
+---
+
+## 1. User Input and Browser Processing
+
+- User enters a URL (e.g., `https://www.example.com`) and hits Enter.
+- The browser checks **cache** (memory, disk, service workers) for a local copy of the requested page.
+    - If found and valid, the resource is loaded from cache, skipping the network.
+    - If not, the browser initiates a network request.
+
+---
+
+## 2. URL Parsing
+
+- The browser parses the URL to determine:
+    - **Protocol:** `http` or `https`
+    - **Hostname:** e.g., `www.example.com`
+    - **Port:** Default is 80 for HTTP, 443 for HTTPS (unless specified)
+    - **Path:** e.g., `/index.html`
+    - **Query string** and **fragment** (if any)
+
+---
+
+## 3. DNS Resolution
+
+- The browser (often using the OS) checks the **DNS cache** for the IP of `www.example.com`.
+- If not cached, it queries the configured DNS server:
+    1. Checks the browser's cache
+    2. OS cache
+    3. Router cache (if applicable)
+    4. ISP or public DNS resolver (like 8.8.8.8)
+- The DNS resolver returns the IP address for `www.example.com` (e.g., `93.184.216.34`).
+
+---
+
+## 4. TCP (and TLS for HTTPS) Handshake
+
+- The browser establishes a **TCP connection** to the IP/port (`93.184.216.34:443` for HTTPS).
+    - **Three-way handshake:**
+        1. SYN → (from client to server)
+        2. SYN-ACK ← (from server to client)
+        3. ACK → (from client to server)
+- For HTTPS:
+    - After TCP is established, **TLS handshake** occurs:
+        - ClientHello, ServerHello (SSL certificates exchanged)
+        - The client validates the server certificate (roots of trust)
+        - Encrypted session keys are negotiated.
+
+---
+
+## 5. Routing: Packet's Journey
+
+- Each packet is encapsulated in an IP packet with source and destination IP.
+- Sent to default gateway (usually your router).
+- **NAT (Network Address Translation) occurs at your router or firewall, modifying the source IP of your outbound packet from your private (e.g., 192.168.x.x) to the router's public IP. When reply packets return, the router reverses the translation and sends them to the correct internal machine.**
+- **Layer 2 (Data Link):** Uses MAC addresses to deliver frames within the same local network segment (LAN), forwarding data between devices connected to the same switch.
+- **Layer 3 (Network):** Uses IP addresses and routing to forward packets across different networks, determining the next hop to reach the final destination over the internet.
+- Routers inspect the destination IP and forward the packet hop-by-hop toward the destination, using routing tables.
+- Packets traverse the internet (may go through NAT, multiple ISPs, undersea cables, etc.) to reach the web server’s data center.
+---
+
+## 6. HTTP Request
+
+- After connection setup, the browser sends an **HTTP request** (usually a GET request for `/`).
+    - HTTP headers are sent, such as: Host, User-Agent, Accept, Cookies, etc.
+
+    ```http
+    GET / HTTP/1.1
+    Host: www.example.com
+    User-Agent: Mozilla/5.0 ...
+    ...
+    ```
+
+---
+
+## 7. Server Response
+
+- The server receives the request, processes it (may check databases, read files, or run code).
+- It builds and sends back an **HTTP response**:
+    - Status code (e.g., 200 OK, 404 Not Found)
+    - Headers (e.g., Content-Type, Cache-Control)
+    - Body (HTML, JSON, images, files, etc.)
+
+---
+
+## 8. Browser Rendering
+
+- The browser receives the HTML and begins parsing.
+    - It may initiate **additional requests** for CSS, JavaScript, images, fonts, and other resources as referenced in the HTML.
+    - For each resource requested, the DNS resolution, TCP/TLS handshake, and HTTP(S) request/response cycle may repeat as needed.
+- The browser constructs the **DOM** (Document Object Model), applies CSS styles, executes JavaScript, and lays out the page.
+
+---
+
+## 9. User Sees the Page
+
+- The final page is displayed in the browser, complete with styles and interactivity provided by CSS and JavaScript.
+
+---
+
+## Sequence Diagram: Journey from Browser to Website
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant DNS as "DNS Server"
+    participant Web as "Web Server"
+    User->>Browser: Enter URL & press Enter
+    Browser->>DNS: Query for www.example.com
+    DNS-->>Browser: Return IP address
+    Browser->>Web: TCP/TLS handshake,\nHTTP Request
+    Web-->>Browser: HTTP Response (HTML)
+    Browser->>Web: More HTTP(S) requests (CSS, JS, Images)
+    Web-->>Browser: More responses
+    Browser->>User: Render page
+ ```   
+---
+
 # SDN vs VLAN
 
 ## VLAN (Virtual Local Area Network)
