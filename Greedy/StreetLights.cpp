@@ -109,6 +109,15 @@ int minStreetLamps(vector<int>& locations) {
         farthest = max(farthest, maxReach[i]);
 
         /*
+         If even after considering all lamps so far,
+         the farthest we can reach is still before i,
+         then position i can NEVER be lit.
+         There is a gap in coverage → impossible.
+        */
+        if (farthest < i)
+            return -1;
+
+        /*
          If i is greater than currentEnd,
          it means we have stepped into a DARK area.
          The previously chosen lamps no longer cover us.
@@ -121,14 +130,7 @@ int minStreetLamps(vector<int>& locations) {
             currentEnd = farthest;  // extend light as far as possible
         }
 
-        /*
-         If even after considering all lamps so far,
-         the farthest we can reach is still before i,
-         then position i can NEVER be lit.
-         There is a gap in coverage → impossible.
-        */
-        if (farthest < i)
-            return -1;
+        
     }
 
     // If we successfully covered positions 1..n
