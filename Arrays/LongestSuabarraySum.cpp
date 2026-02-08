@@ -1,4 +1,4 @@
-//Find length of longest subarray - Prefixsum method, Used when array conatins _ve,0s and -ve
+//Find length of longest subarray with sum==k- Prefixsum method, Used when array conatins _ve,0s and -ve
 //Use 2 pointer for only +vesand 0s
 
 int getLongestSubarray(vector<int>& nums, int k){
