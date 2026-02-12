@@ -49,3 +49,48 @@ int main() {
 
     return 0;
 }
+
+
+#include <iostream>
+
+class Complex {
+private:
+    double real, imag;
+public:
+    // Default constructor
+    Complex(double r = 0, double i = 0) : real(r), imag(i) {}
+
+    // Copy constructor
+    Complex(const Complex& other) {
+        real = other.real;
+        imag = other.imag;
+        std::cout << "Copy constructor called!" << std::endl;
+    }
+
+    // Copy assignment operator
+    Complex& operator=(const Complex& other) {
+        std::cout << "Copy assignment operator called!" << std::endl;
+        // Check for self-assignment
+        if (this != &other) {
+            real = other.real;
+            imag = other.imag;
+        }
+        return *this;
+    }
+
+    void display() const {
+        std::cout << real << " + " << imag << "i" << std::endl;
+    }
+};
+
+int main() {
+    Complex c1(2, 3);       // Calls parameterized constructor
+    Complex c2 = c1;        // Calls copy constructor
+    c2.display();
+
+    Complex c3;             // Default constructor
+    c3 = c1;                // Calls copy assignment operator
+    c3.display();
+
+    return 0;
+}
