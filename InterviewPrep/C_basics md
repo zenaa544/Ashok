@@ -1,0 +1,28 @@
+| Step           | Tool | Input   | Output      | What Happens                                                                           |
+|----------------|------|---------|-------------|----------------------------------------------------------------------------------------|
+| Preprocessing  | cpp  | file.c  | file.i      | Expands macros, processes `#include` and conditionals, removes comments and directives |
+| Compilation    | cc1  | file.i  | file.s      | Converts preprocessed C code to assembly code for the target machine                   |
+| Assembly       | as   | file.s  | file.o      | Translates assembly code into machine code and produces an object file                 |
+| Linking        | ld   | file.o  | a.out/exe   | Combines object files and libraries, resolves addresses/symbols, creates executable    |
+
+
+
+
++-----------------------------+
+|      Command-line args      |  <-- Highest memory address
+|      Environment variables  |  
++-----------------------------+
+|           Stack             |  <-- Grows downwards (toward lower addresses)
+|   (local variables, frames) |
++-----------------------------+
+|           Heap              |  <-- Grows upwards (toward higher addresses)
+|  (malloc/new dynamic alloc) |
++-----------------------------+
+|  Uninitialized Data (BSS)   |  (global/static vars, uninitialized)
++-----------------------------+
+|  Initialized Data (.data)   |  (global/static vars, initialized)
++-----------------------------+
+|        Text (Code)          |  (program instructions)
++-----------------------------+
+|    (OS, share libraries)    |  (may reside at other mapped regions)
++-----------------------------+
