@@ -1,0 +1,40 @@
+Basic Understanding
+
+Explain the difference between a process and a thread.
+What happens when a process calls fork()? What is copied/shared?
+Advanced Scenarios
+
+How would you implement a daemon process in Unix/Linux?
+What are zombie and orphan processes? How are they handled in Linux?
+Describe the lifecycle and state transitions of a process.
+What is the role of the process table in the Linux kernel? What does it contain?
+Troubleshooting/Debugging
+
+How would you detect and avoid zombie processes when writing server code?
+A parent process terminates before its children. What happens to the child processes?
+Why might you see a lot of zombies on a system? How do you fix it?
+Signals
+
+Describe how signals are delivered and handled in Unix/Linux.
+What happens if you send SIGKILL to a process? Can it be caught or ignored?
+How would you safely handle SIGCHLD in a multi-threaded application?
+IPC and Resource Management
+
+Compare the use of shared memory vs. sockets for IPC.
+How does the kernel handle resource cleanup on process exit?
+Performance and Scalability
+
+Explain how context switching affects performance.
+What are the implications of creating thousands of processes vs. threads?
+System Calls & Implementation
+
+What system calls are involved in process creation and execution?
+How would you implement a process pool in C or Go?
+Explain how exec() family of system calls work and how they relate to fork().
+Special Cases
+
+How can you change the priority (nice value) of a running process? What effect does this have?
+Describe how process groups and sessions are used in job control.
+Security
+
+How is process privilege and security handled? What are setuid processes?
