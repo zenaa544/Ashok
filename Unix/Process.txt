@@ -38,3 +38,104 @@ Describe how process groups and sessions are used in job control.
 Security
 
 How is process privilege and security handled? What are setuid processes?
+
+===============================================================
+
+How to Write a Daemon Process
+Writing a proper daemon involves several steps. The goal is to detach from the terminal, handle signals, and ensure it runs in the background.
+
+Typical Steps to Daemonize a Process:
+Fork and exit parent
+
+Parent exits so the child is not a controlling terminal process.
+
+Create a new session
+
+Child calls setsid() to start a new session, separating itself from controlling terminal and process group.
+
+Change working directory
+
+Optional, but common to change to / to avoid locking mount points.
+
+Close file descriptors
+
+Close inherited open files (stdin, stdout, stderr) or redirect them.
+
+Set proper file permissions (umask)
+
+Set umask to a known value, usually 0.
+
+Optionally, handle signals, PID file, and logging
+
+Proper daemon handles signals and can write its PID to a file.
+
+Example Daemon Skeleton (in C):
+c
+Run Code
+Copy code
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+void daemonize() {
+    pid_t pid;
+
+    // Fork off the parent process
+    pid = fork();
+    if (pid < 0) exit(EXIT_FAILURE);
+    // If we got a good PID, exit parent
+    if (pid > 0) exit(EXIT_SUCCESS);
+
+    // Change file mode mask
+    umask(0);
+
+    // Create a new session
+    if (setsid() < 0) exit(EXIT_FAILURE);
+
+    // Change working directory
+    chdir("/");
+
+    // Close all open file descriptors
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+
+    // Daemon running logic:
+    // For demonstration, we'll write to a log file forever
+    while (1) {
+        FILE *fp = fopen("/tmp/daemon.log", "a");
+        if (fp) {
+            fprintf(fp, "Daemon alive %d\n", getpid());
+            fclose(fp);
+        }
+        sleep(10);
+    }
+}
+
+int main() {
+    daemonize();
+    return 0;
+}
+How to Compile and Run:
+bash
+Copy code
+gcc -o mydaemon mydaemon.c
+./mydaemon
+Check /tmp/daemon.log to see periodic logs.
+
+What Makes This a Daemon?
+It is detached from the terminal.
+It runs in the background, in its own session.
+It does not interact with stdin/stdout/stderr.
+It can be started via init/systemd for real production use.
+Summary Table
+Step	Purpose
+Fork and exit	Detach from terminal
+setsid()	Start new session (no terminal)
+umask(0)	Set file creation mask
+chdir("/")	Avoid locking mount points
+Close FDs	Terminal independence
+Run in background	Daemon functionality
+
