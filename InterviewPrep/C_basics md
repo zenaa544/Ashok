@@ -26,3 +26,21 @@
 +-----------------------------+
 |    (OS, share libraries)    |  (may reside at other mapped regions)
 +-----------------------------+
+
+
+
+| Declaration              | Where accessible           | Lifetime            | Storage location |
+|--------------------------|---------------------------|---------------------|------------------|
+| `int g;` (global)        | Any file (with `extern`)  | Program's lifetime  | .data/.bss       |
+| `static int g;` (global) | Only that source file     | Program's lifetime  | .data/.bss       |
+| `int l;` (local)         | Only in that function     | Function call       | Stack            |
+| `static int l;` (local)  | Only in that function     | Program's lifetime  | .data/.bss       |
+
+
++-----------------------+---------------------------+
+| Code Location         | Where is it stored?       |
++-----------------------+---------------------------+
+| static int x (file)   |   .data / .bss (global)   |
+| static int x (func)   |   .data / .bss (retained) |
+| int x (func)          |   Stack (temporary)       |
++-----------------------+---------------------------+
