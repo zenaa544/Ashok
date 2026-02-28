@@ -82,3 +82,28 @@ User authentication leads to shell or desktop session
 | 8    | Init/Systemd         | Root filesystem             | Kernel starts as PID 1                   | Reads config, launches services, completes boot                   |
 | 9    | Services/Daemons     | Root filesystem             | Init/systemd launches processes          | Networking, logging, device management, user-space processes      |
 | 10   | Login Prompt/Desktop | Root filesystem             | getty/display manager starts             | User login – shell or desktop session provided                    |
+
+
+
+
+
+======================================================================================================================
+| Feature                | Hard Link                                                   | Soft Link (Symbolic Link)                                        |
+|------------------------|-------------------------------------------------------------|-------------------------------------------------------------------|
+| Definition             | Another directory entry pointing directly to the same inode/data as original file | A special file that contains a path to another file/directory     |
+| Inode                  | Both links share the same inode (and thus, same data)       | Symlink has its own inode; target file has a separate inode       |
+| File type              | Regular file                                                | Symlink file (shown as "l" in ls -l)                              |
+| Filename               | Multiple filenames refer to the same inode/data             | Symlink filename refers to a distinct inode that stores pathname  |
+| Can cross filesystems? | No - must be in same partition/filesystem                   | Yes - path can point to file on any filesystem                    |
+| Target existence       | Data always available as long as at least one hard link exists | Symlink can be broken if target is deleted/moved               |
+| Deleting links         | File only removed when all hard links are deleted           | Deleting symlink does not affect target; deleting target breaks symlink |
+| Link count             | Increased for each hard link (see ls -l)                    | Not increased; symlink link count is always 1                     |
+| Works with directories?| Generally not allowed (except for '.' and '..')             | Yes, can point to directories                                     |
+| Permissions            | Permissions depend on target file                           | Permissions apply only to symlink file itself, not target         |
+| File editing           | Editing via any hard link affects all hard links (same data)| Editing via symlink affects the target file (if it exists)        |
+| Space usage            | No extra disk space (just directory entry)                  | Uses extra space (symlink file stores pathname)                   |
+| Display in ls -l       | No visual difference, but link count reflects number of hard links | Shows with l (symlink) and points to target (e.g. file2 -> file1) |
+
+
+
+
