@@ -1,3 +1,8 @@
+/*Instead of probing sequentially (i.e., idx+1, idx+2, idx+3, ...), quadratic probing moves by squared offsets:
+idx + 1², idx + 2², idx + 3², ...
+Helps reduce clustering compared to linear probe.
+    */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
