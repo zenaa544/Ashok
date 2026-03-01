@@ -1,3 +1,5 @@
+/*probing sequentially (i.e., idx+1, idx+2, idx+3, ...)*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
