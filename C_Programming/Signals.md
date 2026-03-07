@@ -379,3 +379,167 @@ Delivery timing depends on **process state**.
 - Signals may cause system calls to return **EINTR**.
 - Some signals (**SIGKILL**, **SIGSTOP**) cannot be caught or ignored.
 - Zombies cannot receive or process signals.
+
+
+# Additional Note — Signals Sent Between Processes
+
+## 1. Process-to-Process Signals
+
+In Unix, **one process can send signals to another process**.
+
+This is commonly used for:
+
+- process control
+- inter-process communication (IPC)
+- stopping or terminating programs
+- notifying events
+
+Signals are sent using system calls such as:
+
+```
+kill()
+raise()
+sigqueue()
+```
+
+---
+
+# 2. kill() System Call
+
+Prototype:
+
+```c
+int kill(pid_t pid, int sig);
+```
+
+Parameters:
+
+| Parameter | Meaning |
+|----------|--------|
+| pid | target process or group |
+| sig | signal number |
+
+Example:
+
+```c
+kill(1234, SIGTERM);
+```
+
+This sends **SIGTERM** to process **PID 1234**.
+
+---
+
+# 3. kill() PID Semantics
+
+The `pid` argument controls **who receives the signal**.
+
+| pid value | Meaning |
+|----------|--------|
+| > 0 | send signal to specific process |
+| 0 | send signal to all processes in same process group |
+| -1 | send signal to all processes the caller has permission to signal |
+| < -1 | send signal to process group |
+
+Example:
+
+```c
+kill(-1234, SIGTERM);
+```
+
+Send signal to **process group 1234**.
+
+---
+
+# 4. raise() System Call
+
+A process can send a signal **to itself**.
+
+Prototype:
+
+```c
+int raise(int sig);
+```
+
+Example:
+
+```c
+raise(SIGINT);
+```
+
+Equivalent to:
+
+```
+kill(getpid(), SIGINT)
+```
+
+---
+
+# 5. sigqueue() System Call
+
+Allows sending a signal **with additional data**.
+
+Prototype:
+
+```c
+int sigqueue(pid_t pid, int sig, union sigval value);
+```
+
+Example:
+
+```c
+union sigval val;
+val.sival_int = 42;
+
+sigqueue(pid, SIGUSR1, val);
+```
+
+The receiving process can read this data in the signal handler.
+
+---
+
+# 6. Permissions for Sending Signals
+
+A process can send signals only if:
+
+- it has the **same UID as the target process**
+- or it has **superuser privileges (root)**
+
+This prevents unauthorized control of other processes.
+
+---
+
+# 7. Common Example — Shell Terminating a Process
+
+When you run:
+
+```
+kill -9 1234
+```
+
+What happens:
+
+```
+shell process
+      ↓
+kill() system call
+      ↓
+kernel sends SIGKILL
+      ↓
+target process terminated
+```
+
+---
+
+# 8. Summary
+
+Signals may originate from:
+
+| Source | Example |
+|------|---------|
+| Kernel events | SIGSEGV, SIGFPE |
+| Hardware interrupts | SIGINT |
+| Timers | SIGALRM |
+| Child process exit | SIGCHLD |
+| **Other processes** | kill(), sigqueue() |
+
+Process-to-process signaling is a **core Unix IPC and control mechanism**.
