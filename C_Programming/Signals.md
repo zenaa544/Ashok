@@ -543,3 +543,433 @@ Signals may originate from:
 | **Other processes** | kill(), sigqueue() |
 
 Process-to-process signaling is a **core Unix IPC and control mechanism**.
+
+
+# D State and Signal Masking in Unix/Linux
+
+## 1. What is D State?
+
+In tools like `ps` or `top`, the process state **D** means:
+
+```
+Uninterruptible Sleep
+```
+
+Kernel state:
+
+```
+TASK_UNINTERRUPTIBLE
+```
+
+This means the process is **waiting inside the kernel for an operation to complete** and **cannot be interrupted by signals**.
+
+---
+
+# 2. Why the Kernel Uses D State
+
+Certain operations must **not be interrupted**, otherwise the system could enter an inconsistent state.
+
+Examples include:
+
+- disk I/O
+- filesystem operations
+- device driver operations
+- memory paging
+- NFS operations
+
+Example flow:
+
+```
+process calls read()
+      ↓
+kernel starts disk I/O
+      ↓
+process sleeps in D state
+      ↓
+disk finishes operation
+      ↓
+process wakes up
+```
+
+During this time the process **cannot run and cannot handle signals immediately**.
+
+---
+
+# 3. Why Signals Cannot Interrupt D State
+
+Signals require the process to return to **user mode** so the kernel can deliver the signal.
+
+But during D state:
+
+- the process is **blocked inside kernel code**
+- the kernel is **waiting for hardware or driver completion**
+
+Interrupting it could break kernel logic or leave resources inconsistent.
+
+Therefore:
+
+```
+signals are marked pending
+but not delivered yet
+```
+
+---
+
+# 4. Example Scenario
+
+```
+process waiting for disk I/O
+       ↓
+process enters D state
+       ↓
+SIGKILL sent
+       ↓
+signal marked pending
+       ↓
+I/O completes
+       ↓
+process wakes up
+       ↓
+signal delivered
+       ↓
+process terminated
+```
+
+This is why sometimes:
+
+```
+kill -9 <pid>
+```
+
+appears to **not work immediately**.
+
+---
+
+# 5. Observing D State
+
+Example using `ps`:
+
+```
+ps aux
+```
+
+Example output:
+
+```
+USER   PID  STAT COMMAND
+root  1234   D   some_process
+```
+
+`STAT` column value:
+
+```
+D = uninterruptible sleep
+```
+
+In `top` you will also see:
+
+```
+D
+```
+
+---
+
+# 6. Signal Masking
+
+Signal masking allows a process to **temporarily block specific signals**.
+
+Blocked signals are **not delivered immediately**.
+
+Instead they become **pending signals**.
+
+They are delivered once the signal is **unblocked**.
+
+---
+
+# 7. Why Signal Masking Is Used
+
+Signal masking is used to **protect critical sections**.
+
+Example problems without masking:
+
+```
+process updating shared data
+       ↓
+signal arrives
+       ↓
+handler modifies same data
+       ↓
+data corruption
+```
+
+Signal masking prevents signals from interrupting sensitive operations.
+
+---
+
+# 8. Example of Signal Masking
+
+Block `SIGINT`:
+
+```c
+#include <signal.h>
+
+sigset_t set;
+
+sigemptyset(&set);
+sigaddset(&set, SIGINT);
+
+sigprocmask(SIG_BLOCK, &set, NULL);
+```
+
+Now `SIGINT` will **not be delivered**.
+
+It becomes **pending**.
+
+---
+
+# 9. Unblocking Signals
+
+To allow the signal again:
+
+```c
+sigprocmask(SIG_UNBLOCK, &set, NULL);
+```
+
+If a blocked signal is pending:
+
+```
+it will be delivered immediately after unblocking
+```
+
+---
+
+# 10. Signal Masking Flow
+
+```
+signal blocked
+      ↓
+signal sent
+      ↓
+signal marked pending
+      ↓
+signal unblocked
+      ↓
+signal delivered
+```
+
+---
+
+# 11. Difference: D State vs Signal Masking
+
+| Feature | D State | Signal Masking |
+|------|---------|----------------|
+| Controlled by | kernel | process |
+| Purpose | wait for kernel I/O | protect critical sections |
+| Signals handled | delayed until wakeup | delayed until unblocked |
+| Can process run? | no | yes |
+
+---
+
+# 12. Key Takeaways
+
+- **D state** means the process is in **uninterruptible sleep** waiting for kernel I/O.
+- Even `SIGKILL` cannot terminate a process immediately in D state.
+- The signal becomes **pending** and is handled when the process wakes up.
+- **Signal masking** is used by programs to temporarily block signals.
+- Masked signals become **pending** until they are unblocked.
+
+  # sigprocmask() — Parameters Explanation
+
+`sigprocmask()` is used to **examine or change the signal mask of the calling process**.
+
+The **signal mask** is the set of signals that are **currently blocked**.
+
+---
+
+# Function Prototype
+
+```c
+#include <signal.h>
+
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+```
+
+---
+
+# Parameters
+
+| Parameter | Type | Meaning |
+|----------|------|--------|
+| `how` | `int` | Operation specifying how to modify the signal mask |
+| `set` | `const sigset_t *` | Pointer to a set of signals to apply |
+| `oldset` | `sigset_t *` | Stores the previous signal mask |
+
+---
+
+# 1. `how` Parameter
+
+Controls **how the signal mask will change**.
+
+Possible values:
+
+| Value | Meaning |
+|------|--------|
+| `SIG_BLOCK` | Add signals in `set` to the mask (block them) |
+| `SIG_UNBLOCK` | Remove signals in `set` from the mask |
+| `SIG_SETMASK` | Replace the entire signal mask with `set` |
+
+Example:
+
+```
+SIG_BLOCK → block these signals
+SIG_UNBLOCK → unblock these signals
+SIG_SETMASK → overwrite current mask
+```
+
+---
+
+# 2. `set` Parameter
+
+Pointer to a **signal set** (`sigset_t`).
+
+This specifies **which signals are affected**.
+
+Example creation:
+
+```c
+sigset_t set;
+
+sigemptyset(&set);
+sigaddset(&set, SIGINT);
+```
+
+This creates a set containing:
+
+```
+SIGINT
+```
+
+---
+
+# 3. `oldset` Parameter
+
+If not `NULL`, the previous signal mask is stored here.
+
+This is useful for **restoring the original mask later**.
+
+Example:
+
+```c
+sigset_t oldset;
+
+sigprocmask(SIG_BLOCK, &set, &oldset);
+```
+
+Now:
+
+```
+oldset = previous mask
+```
+
+---
+
+# Example Program
+
+Block `SIGINT` temporarily.
+
+```c
+#include <stdio.h>
+#include <signal.h>
+
+int main() {
+
+    sigset_t set;
+
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+
+    sigprocmask(SIG_BLOCK, &set, NULL);
+
+    printf("SIGINT blocked\n");
+
+    sleep(10);
+
+    sigprocmask(SIG_UNBLOCK, &set, NULL);
+
+    printf("SIGINT unblocked\n");
+
+    return 0;
+}
+```
+
+Behavior:
+
+```
+Ctrl+C during first 10 seconds → ignored
+after unblocking → signal works
+```
+
+---
+
+# Typical Usage Pattern
+
+Programs often:
+
+```
+save old mask
+block signals
+critical section
+restore old mask
+```
+
+Example:
+
+```c
+sigset_t set, old;
+
+sigemptyset(&set);
+sigaddset(&set, SIGINT);
+
+sigprocmask(SIG_BLOCK, &set, &old);
+
+/* critical section */
+
+sigprocmask(SIG_SETMASK, &old, NULL);
+```
+
+---
+
+# Return Value
+
+| Return | Meaning |
+|------|--------|
+| `0` | success |
+| `-1` | error |
+
+---
+
+# Important Notes
+
+- Only affects the **calling process or thread**.
+- Some signals **cannot be blocked**:
+
+```
+SIGKILL
+SIGSTOP
+```
+
+The kernel always delivers them.
+
+---
+
+# Summary
+
+```
+sigprocmask(how, set, oldset)
+```
+
+| Parameter | Role |
+|------|------|
+| `how` | how the mask should change |
+| `set` | which signals to affect |
+| `oldset` | store previous mask |
