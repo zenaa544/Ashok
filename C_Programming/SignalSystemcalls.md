@@ -483,7 +483,11 @@ int main()
 
     return 0;
 }
-# 4. kill()
+```
+
+---
+
+## 4. kill()
 
 ## What is kill()
 
