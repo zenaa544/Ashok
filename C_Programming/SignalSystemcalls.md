@@ -385,7 +385,104 @@ Advantages over `signal()`:
 - supports flags like `SA_RESTART`
 
 ---
+# sigaction Example — Signal Mask + Flags Demo
 
+---
+
+## ⭐ Program Description
+
+This program demonstrates:
+- SIGINT signal handling (Ctrl + C)
+- Signal masking using `sa_mask`
+- Signal behavior control using `sa_flags`
+
+Concepts shown:
+- Blocking specific signals during handler execution
+- Writing reliable signal handlers for system programs
+
+---
+
+## ⭐ Important sigaction Flags
+
+| Flag | Meaning |
+|------|---------|
+| **SA_RESTART** | Restart interrupted system calls (read, accept, etc.) |
+| **SA_NODEFER** | Do not block the signal while handler is executing (re-entrant handling) |
+| **SA_SIGINFO** | Use extended handler with metadata information |
+| **SA_NOCLDSTOP** | Ignore child stop signals (useful in process management) |
+
+---
+
+## ⭐ Code Example
+
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+/* Signal handler function */
+void handler(int sig)
+{
+    printf("SIGINT caught inside handler\n");
+
+    /* Simulate work inside handler */
+    sleep(2);
+
+    printf("Handler finishing\n");
+}
+
+int main()
+{
+    /* sigaction structure */
+    struct sigaction sa;
+
+    /* Assign handler function */
+    sa.sa_handler = handler;
+
+    /*
+     * Signal Mask Explanation
+     * -----------------------
+     * sa_mask specifies signals that should be blocked
+     * while the handler is executing.
+     *
+     * Here we block SIGTERM so termination requests
+     * cannot interrupt signal handling logic.
+     */
+
+    sigset_t block_set;
+
+    /* Initialize empty signal set */
+    sigemptyset(&block_set);
+
+    /* Add SIGTERM to blocking list */
+    sigaddset(&block_set, SIGTERM);
+
+    /* Assign mask to sigaction structure */
+    sa.sa_mask = block_set;
+
+    /*
+     * Flags Explanation
+     * -----------------
+     * SA_RESTART → Restart interrupted system calls automatically.
+     * SA_NODEFER → Do not block signal while handling it (allows re-entrancy).
+     * SA_SIGINFO → Use extended handler with signal metadata.
+     * SA_NOCLDSTOP → Ignore child stop signals.
+     */
+
+    sa.sa_flags = SA_RESTART;
+
+    /* Register SIGINT handler */
+    sigaction(SIGINT, &sa, NULL);
+
+    /* Infinite loop simulating server work */
+    while(1)
+    {
+        printf("Running...\n");
+        sleep(1);
+    }
+
+    return 0;
+}
 # 4. kill()
 
 ## What is kill()
